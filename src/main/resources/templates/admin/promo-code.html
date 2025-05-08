@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+    <link href="https://unpkg.com/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link th:href="@{/css/style.css}" rel="stylesheet" />
+    <script type="text/javascript" th:src="@{/js/main.js}"></script>
+</head>
+<body>
+
+<div th:replace="admin/header-admin"></div>
+<div class="container-fluid ps-0">
+    <div class="row">
+        <div class="col-lg-3 col-md-4 col-sm-12">
+            <div th:replace="admin/sidebar.html"></div>
+        </div>
+        <div class="col-lg-9 col-md-8 col-sm-12 mt-3">
+            <div class="table-responsive mx-5">
+                <div class="table-wrapper">
+                    <div class="table-title">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <h2>Quản lý <b>mã khuyến mãi</b></h2>
+                            </div>
+                            <div class="col-sm-6">
+                                <a href="#addProductModal" id="addPromotion" class="btn btn-success" data-bs-toggle="modal">
+                                    <span>Thêm mã khuyến mãi</span></a>
+                                <a href="#deleteEmployeeModal" class="btn btn-danger" data-bs-toggle="modal">
+                                    <span>Xóa</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>
+							<span class="custom-checkbox">
+								<input type="checkbox" id="selectAll">
+								<label for="selectAll"></label>
+							</span>
+                            </th>
+                            <th>Tên mã khuyến mãi</th>
+                            <th>Giảm giá</th>
+                            <th>Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="promotion : ${promotions}">
+                            <td>
+							<span class="custom-checkbox">
+								<input type="checkbox" id="checkbox1" name="options[]" value="1">
+								<label for="checkbox1"></label>
+							</span>
+                            </td>
+                            <td th:text="${promotion.getName()}"></td>
+                            <td th:text="${promotion.getPromotionLimit() + '%'}"></td>
+                            <td>
+                                <a href="#addProductModal" th:data-id="${promotion.getId()}" data-bs-target="#addProductModal" data-bs-toggle="modal" class="edit">
+                                    <i class="material-icons" data-bs-toggle="tooltip" title="Edit">&#xE254;</i>
+                                </a>
+                                <a href="#deleteEmployeeModal" th:data-id="${promotion.getId()}" data-bs-target="#deleteEmployeeModal" data-bs-toggle="modal">
+                                    <i class="bi bi-trash" title="Delete" data-bs-toggle="tooltip" style="color: red"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="clearfix">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                <a th:if="${promotions.hasPrevious()}" class="page-link" th:href="@{/admin/promo-code(page=0)}">First</a>
+                            </li>
+                            <li class="page-item" th:classappend="${!promotions.hasPrevious()}  ? 'disabled' : ''">
+                                <a class="page-link" th:if="${promotions.hasPrevious()}"
+                                   th:href="@{/admin/promo-code(page=${promotions.previousPageable().pageNumber})}">Previous</a>
+                            </li>
+                            <li th:each="i : ${#numbers.sequence(0, promotions.totalPages - 1)}"
+                                th:class="${i == promotions.number ? 'page-item active' : 'page-item'}"
+                                th:if="${i >= promotions.number - 2 and i <= promotions.number + 2}">
+                                <a th:if="${i >= 0}" class="page-link" th:href="@{/admin/promo-code(page=${i})}" th:text="${i + 1}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${!promotions.hasNext()} ? 'disabled':''">
+                                <a class="page-link" th:if="${promotions.hasNext()}"
+                                   th:href="@{/admin/promo-code(page=${promotions.nextPageable().pageNumber})}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" th:href="@{/admin/promo-code(page=${promotions.totalPages - 1 > 0 ? promotions.totalPages - 1 : 0})}">Last</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="deleteEmployeeModal" class="modal fade" tabindex="-1" aria-labelledby="deleteEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form>
+                <div class="modal-header">
+                    <h4 class="modal-title">Xóa mã khuyến mãi</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc muốn xóa mã khuyến mãi này không?</p>
+                    <p class="text-warning"><small>Thao tác này sẽ không thể hoàn lại.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-bs-dismiss="modal"  value="Hủy">
+                    <input type="submit" id="deletePromo" class="btn btn-danger" value="Xóa">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Thêm mã khuyến mãi mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <p style="display: none" id="idPromo"></p>
+            <div class="modal-body">
+                <form method="POST" action="/admin/promotion">
+                    <div class="mb-3">
+                        <label  class="form-label">Tên mã khuyến mãi</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Nhập tên mã khuyến mãi">
+                    </div>
+                    <div class="mb-3">
+                        <label for="productPrice" class="form-label">Giảm giá</label>
+                        <select class="form-select" name="promotionLimit" id="productPrice">
+                            <option value="0">Chọn mức giảm giá</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label  class="form-label">Ngày bắt đầu</label>
+                        <input name="dateStart" id="dateStart" type="date" class="form-control"  placeholder="Chọn ngày bắt đầu">
+                    </div>
+                    <div class="mb-3">
+                        <label  class="form-label">Ngày kết thúc</label>
+                        <input name="dateEnd" id="dateEnd" type="date" class="form-control"  placeholder="Chọn ngày kết thúc">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" id="add" class="btn btn-primary edit" data-bs-dismiss="modal">Lưu</button>
+                        <button style="display: none;" type="button" id="update" class="btn btn-primary" data-bs-dismiss="modal">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="admin/footer.html"></div>
+
+<script>
+    const addProductModalLabel = document.getElementById('addProductModalLabel')
+    const name = document.getElementById('name')
+    const productPrice = document.getElementById('productPrice')
+    const dateStart = document.getElementById('dateStart')
+    const dateEnd = document.getElementById('dateEnd')
+    const edit = document.querySelectorAll('.edit')
+    const formDelete = document.getElementById('deleteEmployeeModal')
+    const deletePromo = document.getElementById('deletePromo')
+    const update = document.getElementById('update')
+    const add = document.getElementById('add')
+    const addPromotion = document.getElementById('addPromotion')
+    const idPromo = document.getElementById('idPromo')
+    let proId
+
+    edit.forEach(edt => {
+        edt.addEventListener('click', function() {
+            let id = this.getAttribute('data-id')
+            add.style.display = 'none'
+            update.style.display = 'block'
+            $.ajax({
+                url: '/api/promotion/' + id,
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    const data = response.data
+                    let date1 = new Date(data.dateStart)
+                    let date2 = new Date(data.dateEnd)
+                    let dateStart1 = date1.getFullYear() + "-" + (date1.getMonth() + 1).toString().padStart(2, '0') + "-" + date1.getDate().toString().padStart(2, '0');
+                    let dateEnd1 = date2.getFullYear() + "-" + (date2.getMonth() + 1).toString().padStart(2, '0') + "-" + date2.getDate().toString().padStart(2, '0');
+                    name.value = data.name
+                    productPrice.value = data.promotionLimit
+                    dateStart.value = dateStart1
+                    dateEnd.value = dateEnd1
+                    idPromo.innerHTML = data.id
+                    addProductModalLabel.innerHTML = response.button
+                    name.setAttribute('readonly', true)
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            })
+        })
+    })
+
+    addPromotion.addEventListener('click', function() {
+        add.style.display = 'block'
+        update.style.display = 'none'
+        name.value = ''
+        productPrice.value = ''
+        dateStart.value = ''
+        dateEnd.value = ''
+        idPromo.innerHTML = ''
+        addProductModalLabel.innerHTML = 'Thêm mã khuyến mãi'
+        name.removeAttribute('readonly')
+    })
+
+    formDelete.addEventListener('show.bs.modal', function(event) {
+        let button = event.relatedTarget
+        proId = button.getAttribute('data-id')
+    })
+
+    deletePromo.addEventListener('click', function() {
+        $.ajax({
+            url: '/api/promotion/' + proId,
+            method: 'DELETE',
+            dataType: 'json',
+            success: function(response) {
+                console.log('Delete Successfully')
+            },
+            error: function(error) {
+                console.log(error)
+            }
+        })
+        $(document).ajaxStop(function() {
+            window.location.reload()
+        })
+    })
+
+    update.addEventListener('click', function() {
+        const id = document.getElementById('idPromo').innerHTML
+        console.log(id)
+        const data = {
+            promotionLimit: productPrice.value,
+            dateStart: dateStart.value,
+            dateEnd: dateEnd.value,
+        }
+        $.ajax({
+            url: '/api/promotion/' + id,
+            method: 'PUT',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function(data) {
+                alert('Update Successfully')
+                window.location.reload()
+            },
+            error: function(error) {
+                console.log(error)
+            }
+        })
+    })
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

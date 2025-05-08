@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<th:block th:replace="~{/partials/header}"></th:block>
+<head>
+    <link th:href="@{/css/detail.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-9">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <img th:src="@{'data:image/jpeg;base64,' + ${product.getImage()}}" alt="Product Image Large" class="img-fluid product-image-large" style="object-fit:cover;width:80%;height:80%; padding: 20px">
+                    </div>
+                </div>
+
+                <div class="col-md-4 py-3 mt-5">
+                    <h3 th:text="${product.getName()}" class="fs-4 text-black"></h3>
+                    <h3 th:text="${'Thương hiệu: ' + product.getBrand()}" class="fs-5 text-black"></h3>
+                    <h3 th:text="${product.getNewPrice()}" id="price" class="text-primary fw-3 fs-3"></h3>
+                </div>
+            </div>
+            <div class="container mt-3 tskt">
+                <div class="fs-2 text-center" style="color: #023E8A; font-weight: bold">Thông số kỹ thuật</div>
+                <p style="display: none" id="config" th:text="${product.getConfig()}"></p>
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <td>CPU</td>
+                        <td id="cpu"></td>
+                    </tr>
+                    <tr>
+                        <td>RAM</td>
+                        <td id="ram"></td>
+                    </tr>
+                    <tr>
+                        <td>Card đồ họa</td>
+                        <td id="card"></td>
+                    </tr>
+                    <tr>
+                        <td>Màn hình</td>
+                        <td id="screen"></td>
+                    </tr>
+                    <tr>
+                        <td>Cổng giao tiếp</td>
+                        <td id="usb"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mota">
+                <table class="table table-bordered">
+                    <tbody>
+
+                    <tr>
+                        <td class="text-center" style="background: #023E8A">
+                            <h4 style="color: whitesmoke; font-weight: bolder">Mô tả sản phẩm</h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="description" th:text="${product.getDescription()}">
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+
+        <div class="col-3 py-2 km">
+            <div class="row">
+                <div class="col-2 py-4">
+                    <img src="/images/deli.webp" alt="">
+                    <img src="/images/Quality.webp" alt="">
+                    <img src="/images/refund.webp" alt="">
+                </div>
+                <div class="col-9 fs-6 py-3">
+                    <ul class="list-unstyled">
+                        <li><a>Miễn phí giao hàng cho đơn hàng từ 5 triệu </a></li>
+                        <li><a>Cam kết hàng chính hãng 100% </a></li>
+                        <li><a>Đổi trả trong vòng 10 ngày </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="container mt-3 mb-3 rec">
+            <div class="fs-2 text-center" style="color: #023E8A; font-weight: bold">Sản phẩm cùng thương hiệu</div>
+            <div class="row">
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <img src="/images/cunghieu1.webp" alt="">
+                    <h6>Bộ cấp nguồn/ Adaptor HP 18.5V 3.5A (Đầu kim) </h6>
+                    <h6 class="text-primary fs-5"><br> Giá: 335.000đ</h6>
+                </div>
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <img src="/images/cunghieu2.png" alt="">
+                    <h6>Mực in HP CB435A </h6>
+                    <h6 class="text-primary fs-5"><br> Giá: 2.390.000đ</h6>
+                </div>
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <img src="/images/cunghieu3.webp" alt="">
+                    <h6>Mực in HP CE312A </h6>
+                    <h6 class="text-primary fs-5"> <br> Giá: 1.990.000₫</h6>
+                </div>
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <img src="/images/cunghieu4.webp" alt="">
+                    <h6>Mực in HP CE321A</h6>
+                    <h6 class="text-primary fs-5"><br> Giá: 2.390.000đ</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+<script>
+    const price = document.getElementById('price')
+    const cpu = document.getElementById('cpu')
+    const ram = document.getElementById('ram')
+    const card = document.getElementById('card')
+    const screen = document.getElementById('screen')
+    const usb = document.getElementById('usb')
+    const config = document.getElementById('config').innerHTML.split(";")
+    const description = document.getElementById('description')
+    const descript = description.innerHTML.split(";")
+    let text = ''
+
+    descript.forEach(des => {
+        text += des + '<br>' + '<br>'
+    })
+    description.innerHTML = text
+
+    cpu.innerHTML = config[0]
+    ram.innerHTML = config[1]
+    card.innerHTML = config[2]
+    screen.innerHTML = config[3]
+    usb.innerHTML = config[4]
+
+    price.innerHTML = Number(price.innerHTML).toLocaleString('en-US') + ' VNĐ';
+
+</script>
+<th:block th:replace="/partials/footer"></th:block>
+</html>
